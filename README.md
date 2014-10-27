@@ -24,8 +24,8 @@ You can get it other ways, but RVM is astronomically better.
 Attributions, licensing, authors, etc.
 ===========================================
 
-Stirrup - Firmware for FM transmitting/recieving systems for assistive tech.
-Copyright (C) 2014  Liam Marshall
+> Stirrup - Firmware for FM transmitting/recieving systems for assistive tech.
+> Copyright (C) 2014  Liam Marshall
 
 > This program is free software: you can redistribute it and/or modify
 > it under the terms of the GNU General Public License as published by
