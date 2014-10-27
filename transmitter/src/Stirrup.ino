@@ -107,7 +107,6 @@ void setup()
 void setupCommands() {
 	sCmd.addCommand("tune", tuneCommand);
 	sCmd.addCommand("save", saveCommand);
-	sCmd.addCommand("rds_station", rdsStationCommand);
 	sCmd.setDefaultHandler(unrecognizedCommand);
 }
 
