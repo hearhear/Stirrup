@@ -135,6 +135,15 @@ void saveCommand() {
 }
 
 void rdsStationCommand() {
+	char *arg;
+	String station = "";
+
+	do {
+		arg = sCmd.next();
+		station.concat(String(arg));
+	} while (arg != NULL);
+
+	info("Setting RDS station name to " + station);
 }
 
 void rdsBufferCommand() {
