@@ -16,7 +16,7 @@ You can get it other ways, but RVM is astronomically better.
 `rake build[<devicename>,<strategy>]`.
 
 ### To upload to a device:
-`rake upload[<devicename>, <strategy>]`.
+`rake upload[<devicename>,<strategy>]`.
 
 `<devicename>` can be either **reciever** or **transmitter**.
 `<strategy>` can be either **production** or **staging**.
