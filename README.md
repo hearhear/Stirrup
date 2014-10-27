@@ -3,12 +3,20 @@ Stirrup
 
 Firmware for the γ version of the FM transmitter (vf0.1 in the board repo)
 
-Has transmitter and reciever code, compile and upload with Ino.
-`cd` to one of the code directories (`reciever/`, `transmitter/`), and run `ino build`, then
-`ino upload /dev/<yourdevice>`.
-Requires these libraries:
 
-* [Adafruit-Si4713-Library](https://github.com/adafruit/Adafruit-Si4713-Library)
-* [Si4703_Breakout](https://github.com/sparkfun/Si4703_FM_Tuner_Evaluation_Board/tree/master/Libraries/Si4703_Breakout)
+Hacking on the code
+====================
+Has transmitter and reciever code, compile and upload with the Rake scripts.
+Requires Ino, so install that: `pip install ino`.
+Requires Rake, so install that: `gem install rake`.
+If you don't have Ruby, get it with [RVM](http://rvm.io).
+You can get it other ways, but RVM is astronomically better.
 
-They're built in to the project in several `lib/` directories.
+### To build the code:
+`rake build[<devicename>,<strategy>]`.
+
+### To upload to a device:
+`rake upload[<devicename>, <strategy>]`.
+
+`<devicename>` can be either **reciever** or **transmitter**.
+`<strategy>` can be either **production** or **staging**.
