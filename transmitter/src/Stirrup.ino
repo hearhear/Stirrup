@@ -108,7 +108,6 @@ void setupCommands() {
 	sCmd.addCommand("tune", tuneCommand);
 	sCmd.addCommand("save", saveCommand);
 	sCmd.addCommand("rds_station", rdsStationCommand);
-	sCmd.addCommand("rds_buffer", rdsBufferCommand);
 	sCmd.setDefaultHandler(unrecognizedCommand);
 }
 
@@ -132,21 +131,6 @@ void tuneCommand() {
 
 void saveCommand() {
 	Logging::info("Saving settings to EEPROM");
-}
-
-void rdsStationCommand() {
-	char *arg;
-	String station = "";
-
-	do {
-		arg = sCmd.next();
-		station.concat(String(arg));
-	} while (arg != NULL);
-
-	info("Setting RDS station name to " + station);
-}
-
-void rdsBufferCommand() {
 }
 
 void unrecognizedCommand(const char *command) {
