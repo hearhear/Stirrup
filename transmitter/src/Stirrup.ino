@@ -44,8 +44,10 @@
 #define RESETPIN 12
 
 #define FMSTATION 10230 // 10230 = 102.30 MHz. The value's in KHz
+int fmstation = 10230; // 10230 = 102.30 MHz. The value's in KHz
 
 #define TXPOWER 115 // Between 88 and 115 dBuV
+int txpower = 115; // Between 88 and 115 dBuV
 
 #define RDS_STATION "gammaFM"
 #define RDS_BUFFER "gammaFM/HearHear transmitter vf0.1"
@@ -136,21 +138,30 @@ void tuneCommand() {
 		return;
 	}
 	tuneMHz = strtod(arg, NULL);
-	int tuneKHz = tuneMHz * 100;
+	fmstation = tuneMHz * 100;
 	Logging::info_nonl("Tuning radio to ");
 	Serial.print(tuneMHz);
 	Serial.println("MHz");
 	#ifndef FAKE_RADIO
-	radio.tuneFM(tuneKHz);
+	radio.tuneFM(fmstation);
 	#endif
 }
 
 void saveCommand() {
 	Logging::info("Saving settings to EEPROM");
+	eeprom_write(fmstation, frequencyKHz);
+	eeprom_write(txpower, transmissionPower);
 }
 
 void loadCommand() {
 	Logging::info("Loading settings from EEPROM");
+	eeprom_read(fmstation, frequencyKHz);
+	eeprom_read(txpower, transmissionPower);
+	Logging::info("fmstation = " + String(fmstation));
+	Logging::info("txpower =" + String(txpower));
+	Logging::info("Updating settings from loaded data...");
+	#ifndef FAKE_RADIO
+	#endif
 }
 
 void unrecognizedCommand(const char *command) {
