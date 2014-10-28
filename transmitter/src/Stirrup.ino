@@ -28,6 +28,18 @@
 #include <SerialCommand.h>
 #include <Logging.h>
 
+#include <CRC.h>
+
+/*  Structured Arduino EEPROM access macros
+	from https://projectgus.com/2010/07/eeprom-access-with-arduino/
+*/
+#include <avr/eeprom.h>
+#define eeprom_read_to(dst_p, eeprom_field, dst_size) eeprom_read_block(dst_p, (void *)offsetof(__eeprom_data, eeprom_field), MIN(dst_size, sizeof((__eeprom_data*)0)->eeprom_field))
+#define eeprom_read(dst, eeprom_field) eeprom_read_to(&dst, eeprom_field, sizeof(dst))
+#define eeprom_write_from(src_p, eeprom_field, src_size) eeprom_write_block(src_p, (void *)offsetof(__eeprom_data, eeprom_field), MIN(src_size, sizeof((__eeprom_data*)0)->eeprom_field))
+#define eeprom_write(src, eeprom_field) { typeof(src) x = src; eeprom_write_from(&x, eeprom_field, sizeof(x)); }
+#define MIN(x,y) ( x > y ? y : x )
+
 #include "constants.h"
 
 #define FAKE_RADIO // For testing. Turns off all radio calls.
@@ -47,10 +59,16 @@ Adafruit_Si4713 radio = Adafruit_Si4713(RESETPIN);
 
 SerialCommand sCmd;
 
+// Data stored in the EEPROM
+struct __eeprom_data {
+	int frequencyKHz;
+	int transmissionPower;
+};
+
 void setup()
 {
 	// Start up serial
-	Serial.begin(9600);
+	Serial.begin(19200);
 	while (!Serial) {
     	; // wait for serial port to connect. Needed for ATmega32u4 based boards (i.e. γ-FM)
   	}
@@ -107,6 +125,7 @@ void setup()
 void setupCommands() {
 	sCmd.addCommand("tune", tuneCommand);
 	sCmd.addCommand("save", saveCommand);
+	sCmd.addCommand("load", loadCommand);
 	sCmd.setDefaultHandler(unrecognizedCommand);
 }
 
@@ -116,6 +135,7 @@ void tuneCommand() {
 
 	arg = sCmd.next();
 	if (arg == NULL) {
+		Logging::warning("`tune` must have arguments!");
 		return;
 	}
 	tuneMHz = strtod(arg, NULL);
@@ -130,6 +150,10 @@ void tuneCommand() {
 
 void saveCommand() {
 	Logging::info("Saving settings to EEPROM");
+}
+
+void loadCommand() {
+	Logging::info("Loading settings from EEPROM");
 }
 
 void unrecognizedCommand(const char *command) {
