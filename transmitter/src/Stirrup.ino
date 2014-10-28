@@ -24,11 +24,8 @@
 
 #include <Wire.h>
 #include <Adafruit_Si4713.h>
-
 #include <SerialCommand.h>
 #include <Logging.h>
-
-#include <CRC.h>
 
 /*  Structured Arduino EEPROM access macros
 	from https://projectgus.com/2010/07/eeprom-access-with-arduino/
