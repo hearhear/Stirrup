@@ -43,11 +43,9 @@
 
 #define RESETPIN 12
 
-#define FMSTATION 10230 // 10230 = 102.30 MHz. The value's in KHz
-int fmstation = 10230; // 10230 = 102.30 MHz. The value's in KHz
+long tuneKHz = 10230; // 10230 = 102.30 MHz. The value's in KHz
 
-#define TXPOWER 115 // Between 88 and 115 dBuV
-int txpower = 115; // Between 88 and 115 dBuV
+int TXdBuV = 115; // Between 88 and 115 dBuV
 
 #define RDS_STATION "gammaFM"
 #define RDS_BUFFER "gammaFM/HearHear transmitter vf0.1"
@@ -60,8 +58,9 @@ SerialCommand sCmd;
 
 // Data stored in the EEPROM
 struct __eeprom_data {
-	int frequencyKHz;
+	long frequencyKHz;
 	int transmissionPower;
+	int v;
 };
 
 void setup()
@@ -86,17 +85,22 @@ void setup()
 	}
 	#endif
 
-	Logging::info("Setting TX power to " + String(TXPOWER));
+
+	Logging::info("Loading settings from EEPROM");
+	loadCommand();
+	Logging::info("Current settings are: ");
+	settingsCommand();
+
+	Logging::info("Setting TX power to " + String(TXdBuV) + "dBuV");
 	#ifndef FAKE_RADIO
-	radio.setTXpower(115);
+	radio.settxpower(115);
 	#endif
 
 	Logging::info_nonl("Tuning to ");
-	Serial.print(FMSTATION / 100);
-	Serial.print('.');
-	Serial.println(FMSTATION % 100);
+	Serial.print(tuneKHz);
+	Serial.println(F(" KHz"));
 	#ifndef FAKE_RADIO
-	radio.tuneFM(FMSTATION);
+	radio.tuneFM(tuneKHz);
 	#endif
 
 	// Grab the tune status
@@ -123,13 +127,14 @@ void setup()
 
 void setupCommands() {
 	sCmd.addCommand("tune", tuneCommand);
+	sCmd.addCommand("power", powerCommand);
 	sCmd.addCommand("save", saveCommand);
 	sCmd.addCommand("load", loadCommand);
+	sCmd.addCommand("settings", settingsCommand);
 	sCmd.setDefaultHandler(unrecognizedCommand);
 }
 
 void tuneCommand() {
-	double tuneMHz;
 	char *arg;
 
 	arg = sCmd.next();
@@ -137,31 +142,52 @@ void tuneCommand() {
 		Logging::warning("`tune` must have arguments!");
 		return;
 	}
-	tuneMHz = strtod(arg, NULL);
-	fmstation = tuneMHz * 100;
+	tuneKHz = strtol(arg, NULL, 0);
 	Logging::info_nonl("Tuning radio to ");
-	Serial.print(tuneMHz);
-	Serial.println("MHz");
+	Serial.print(tuneKHz);
+	Serial.println("KHz");
 	#ifndef FAKE_RADIO
-	radio.tuneFM(fmstation);
+	radio.tuneFM(tuneKHz);
+	#endif
+}
+
+void powerCommand() {
+	char *arg;
+
+	arg = sCmd.next();
+	if (arg == NULL) {
+		Logging::warning("`power` must have arguments!");
+		return;
+	}
+	TXdBuV = strtol(arg, NULL, 0);
+	Logging::info_nonl("Setting TX power to ");
+	Serial.print(TXdBuV);
+	Serial.println("dBuV");
+	#ifndef FAKE_RADIO
+	radio.settxpower(TXdBuV);
 	#endif
 }
 
 void saveCommand() {
 	Logging::info("Saving settings to EEPROM");
-	eeprom_write(fmstation, frequencyKHz);
-	eeprom_write(txpower, transmissionPower);
+	eeprom_write(tuneKHz, frequencyKHz);
+	eeprom_write(TXdBuV, transmissionPower);
 }
 
 void loadCommand() {
 	Logging::info("Loading settings from EEPROM");
-	eeprom_read(fmstation, frequencyKHz);
-	eeprom_read(txpower, transmissionPower);
-	Logging::info("fmstation = " + String(fmstation));
-	Logging::info("txpower =" + String(txpower));
+	eeprom_read(tuneKHz, frequencyKHz);
+	eeprom_read(TXdBuV, transmissionPower);
+	// Logging::info("tuneKHz = " + String(tuneKHz));
+	// Logging::info("TXdBuV =" + String(TXdBuV));
 	Logging::info("Updating settings from loaded data...");
 	#ifndef FAKE_RADIO
 	#endif
+}
+
+void settingsCommand() {
+	Logging::info("Frequency (KHz): " + String(tuneKHz));
+	Logging::info("Transmission power (dBuV): " + String(TXdBuV));
 }
 
 void unrecognizedCommand(const char *command) {
