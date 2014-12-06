@@ -1,51 +1,24 @@
+require 'rubyserial'
+
+devices = {
+	"transmitter" => {"staging" => "pro5v328", "production" => "leonardo"},
+	"reciever" => {"staging" => "pro328", "production" => "leonardo"}
+}
+
 task :build, [:device, :scenario] do |t, args|
-	if args.device == "transmitter"
-		Dir.chdir "transmitter" do
-			if args.scenario == "production"
-				system "ino build -m leonardo"
-			elsif args.scenario == "staging"
-				system "ino build -m uno"
-			else
-				raise "Scenario #{args.scenario} not recognized"
-			end
-		end
-	elsif args.device == "reciever"
-		Dir.chdir "reciever" do
-			if args.scenario == "production"
-				system "ino build -m leonardo"
-			elsif args.scenario == "staging"
-				system "ino build -m uno"
-			else
-				raise "Scenario #{args.scenario} not recognized"
-			end
-		end
-	else
-		raise "Device #{args.device} not recognized"
+	Dir.chdir args.device do
+		variant = devices[args.device][args.scenario]
+		system "ino build -m #{variant}"
 	end
 end
 
 task :upload, [:device, :scenario] do |t, args|
-	if args.device == "transmitter"
-		Dir.chdir "transmitter" do
-			if args.scenario == "production"
-				system "ino upload -m leonardo"
-			elsif args.scenario == "staging"
-				system "ino upload -m uno"
-			else
-				raise "Scenario #{args.scenario} not recognized"
-			end
-		end
-	elsif args.device == "reciever"
-		Dir.chdir "reciever" do
-			if args.scenario == "production"
-				system "ino upload -m leonardo"
-			elsif args.scenario == "staging"
-				system "ino upload -m uno"
-			else
-				raise "Scenario #{args.scenario} not recognized"
-			end
-		end
-	else
-		raise "Device #{args.device} not recognized"
+	Dir.chdir args.device do
+		system "ino upload -m #{devices[args.device][args.scenario]}"
 	end
 end
+
+task :serial, [:port] do |t, args|
+	system "miniterm.py #{args.port} 19200"
+end
+
