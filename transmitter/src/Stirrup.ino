@@ -39,7 +39,7 @@
 
 #include "constants.h"
 
-#define FAKE_RADIO // For testing. Turns off all radio calls.
+//#define FAKE_RADIO // For testing. Turns off all radio calls.
 
 #define RESETPIN 12
 
@@ -81,7 +81,7 @@ void setup()
 
 	#ifndef FAKE_RADIO
 	if (! radio.begin()) {
-		error("No radio?");
+		Logging::error("No radio?");
 	}
 	#endif
 
@@ -93,7 +93,7 @@ void setup()
 
 	Logging::info("Setting TX power to " + String(TXdBuV) + "dBuV");
 	#ifndef FAKE_RADIO
-	radio.settxpower(115);
+	radio.setTXpower(115);
 	#endif
 
 	Logging::info_nonl("Tuning to ");
@@ -106,9 +106,9 @@ void setup()
 	// Grab the tune status
 	#ifndef FAKE_RADIO
 	radio.readTuneStatus();	
-	Logging::info("Current frequency: " + radio.currFreq);
-	Logging::info("Current dBuV: " + radio.currdBuV);
-	Logging::info("Current ANTcap: " + radio.currAntCap);
+	Logging::info("Current frequency: " + String(radio.currFreq));
+	Logging::info("Current dBuV: " + String(radio.currdBuV));
+	Logging::info("Current ANTcap: " + String(radio.currAntCap));
 	#endif
 
 	// Start RDS/RDBS transmission
@@ -121,7 +121,7 @@ void setup()
 	Logging::info("RDS on!");
 	Logging::info("<RDS> Station = " RDS_STATION);
 	Logging::info("<RDS> Buffer = " RDS_BUFFER);
-
+	
 	setupCommands();
 }
 
@@ -164,7 +164,7 @@ void powerCommand() {
 	Serial.print(TXdBuV);
 	Serial.println("dBuV");
 	#ifndef FAKE_RADIO
-	radio.settxpower(TXdBuV);
+	radio.setTXpower(TXdBuV);
 	#endif
 }
 
