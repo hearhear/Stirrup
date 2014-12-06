@@ -1,0 +1,1 @@
+#define NEWLINE "\n"
