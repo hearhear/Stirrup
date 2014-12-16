@@ -90,11 +90,6 @@ void setup()
 	Logging::info("Current settings are: ");
 	settingsCommand();
 
-	Logging::info("Setting TX power to " + String(TXdBuV) + "dBuV");
-	#ifndef FAKE_RADIO
-	radio.setTXpower(115);
-	#endif
-
 	Logging::info_nonl("Tuning to ");
 	Serial.print(tuneKHz);
 	Serial.println(F(" KHz"));
