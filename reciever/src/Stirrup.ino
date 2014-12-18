@@ -46,11 +46,11 @@
 #define SCLK A5
 
 #ifndef FAKE_RADIO
-Si4703_Breakout radio(RESETPIN, SDIO, SCLK)
+Si4703_Breakout radio(RESETPIN, SDIO, SCLK);
 #endif
 
-long channel = 974;
-int volume = 0;
+long recieverChannel = 974;
+int recieverVolume = 0;
 
 SerialCommand sCmd;
 
@@ -77,12 +77,6 @@ void setup()
 	Serial.println(F("under certain conditions."));
 	Serial.println();
 
-	#ifndef FAKE_RADIO
-	if (! radio.begin()) {
-		Logging::error("No radio?");
-	}
-	#endif
-
 	Logging::info("Powering radio on");
 	radio.powerOn();
 
@@ -93,23 +87,12 @@ void setup()
 	settingsCommand();
 
 	Logging::info_nonl("Tuning to ");
-	Serial.print(tuneKHz);
+	Serial.print(recieverChannel);
 	Serial.println(F(" KHz"));
 	#ifndef FAKE_RADIO
-	radio.tuneFM(tuneKHz);
+	radio.setChannel(recieverChannel);
 	#endif
 
-	// Start RDS/RDBS transmission
-	#ifndef FAKE_RADIO
-	radio.beginRDS();
-	radio.setRDSstation(RDS_STATION);
-	radio.setRDSbuffer(RDS_BUFFER);
-	#endif
-
-	Logging::info("RDS on!");
-	Logging::info("<RDS> Station = " RDS_STATION);
-	Logging::info("<RDS> Buffer = " RDS_BUFFER);
-	
 	setupCommands();
 }
 
@@ -130,12 +113,12 @@ void tuneCommand() {
 		Logging::warning("`tune` must have arguments!");
 		return;
 	}
-	tuneKHz = strtol(arg, NULL, 0);
+	recieverChannel = strtol(arg, NULL, 0);
 	Logging::info_nonl("Tuning radio to ");
-	Serial.print(tuneKHz);
+	Serial.print(recieverChannel);
 	Serial.println("KHz");
 	#ifndef FAKE_RADIO
-	radio.tuneFM(tuneKHz);
+	radio.setChannel(recieverChannel);
 	#endif
 }
 
@@ -157,23 +140,23 @@ void volumeCommand() {
 
 void saveCommand() {
 	Logging::info("Saving settings to EEPROM");
-	eeprom_write(tuneKHz, frequencyKHz);
+	eeprom_write(recieverChannel, frequencyKHz);
 	eeprom_write(recieverVolume, volume);
 }
 
 void loadCommand() {
 	Logging::info("Loading settings from EEPROM");
-	eeprom_read(tuneKHz, frequencyKHz);
+	eeprom_read(recieverChannel, frequencyKHz);
 	eeprom_read(recieverVolume, volume);
 	Logging::info("Updating settings from loaded data...");
 	#ifndef FAKE_RADIO
-	radio.setChannel(tuneKhz);
+	radio.setChannel(recieverChannel);
 	radio.setVolume(recieverVolume);
 	#endif
 }
 
 void settingsCommand() {
-	Logging::info("Frequency (KHz): " + String(tuneKHz));
+	Logging::info("Frequency (KHz): " + String(recieverChannel));
 	Logging::info("Volume: " + String(recieverVolume));
 }
 
