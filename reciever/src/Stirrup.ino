@@ -51,14 +51,13 @@ Si4703_Breakout radio(RESETPIN, SDIO, SCLK)
 
 long channel = 974;
 int volume = 0;
-char rdsBuffer[10];
 
 SerialCommand sCmd;
 
 // Data stored in the EEPROM
 struct __eeprom_data {
 	long frequencyKHz;
-	int transmissionPower;
+	int volume;
 	int v;
 };
 
@@ -84,6 +83,9 @@ void setup()
 	}
 	#endif
 
+	Logging::info("Powering radio on");
+	radio.powerOn();
+
 
 	Logging::info("Loading settings from EEPROM");
 	loadCommand();
@@ -95,14 +97,6 @@ void setup()
 	Serial.println(F(" KHz"));
 	#ifndef FAKE_RADIO
 	radio.tuneFM(tuneKHz);
-	#endif
-
-	// Grab the tune status
-	#ifndef FAKE_RADIO
-	radio.readTuneStatus();	
-	Logging::info("Current frequency: " + String(radio.currFreq));
-	Logging::info("Current dBuV: " + String(radio.currdBuV));
-	Logging::info("Current ANTcap: " + String(radio.currAntCap));
 	#endif
 
 	// Start RDS/RDBS transmission
@@ -121,7 +115,7 @@ void setup()
 
 void setupCommands() {
 	sCmd.addCommand("tune", tuneCommand);
-	sCmd.addCommand("power", powerCommand);
+	sCmd.addCommand("volume", volumeCommand);
 	sCmd.addCommand("save", saveCommand);
 	sCmd.addCommand("load", loadCommand);
 	sCmd.addCommand("settings", settingsCommand);
@@ -145,43 +139,42 @@ void tuneCommand() {
 	#endif
 }
 
-void powerCommand() {
+void volumeCommand() {
 	char *arg;
 
 	arg = sCmd.next();
 	if (arg == NULL) {
-		Logging::warning("`power` must have arguments!");
+		Logging::warning("`volume` must have arguments!");
 		return;
 	}
-	TXdBuV = strtol(arg, NULL, 0);
+	recieverVolume = strtol(arg, NULL, 0);
 	Logging::info_nonl("Setting TX power to ");
-	Serial.print(TXdBuV);
-	Serial.println("dBuV");
+	Serial.println(recieverVolume);
 	#ifndef FAKE_RADIO
-	radio.setTXpower(TXdBuV);
+	radio.setVolume(recieverVolume);
 	#endif
 }
 
 void saveCommand() {
 	Logging::info("Saving settings to EEPROM");
 	eeprom_write(tuneKHz, frequencyKHz);
-	eeprom_write(TXdBuV, transmissionPower);
+	eeprom_write(recieverVolume, volume);
 }
 
 void loadCommand() {
 	Logging::info("Loading settings from EEPROM");
 	eeprom_read(tuneKHz, frequencyKHz);
-	eeprom_read(TXdBuV, transmissionPower);
-	// Logging::info("tuneKHz = " + String(tuneKHz));
-	// Logging::info("TXdBuV =" + String(TXdBuV));
+	eeprom_read(recieverVolume, volume);
 	Logging::info("Updating settings from loaded data...");
 	#ifndef FAKE_RADIO
+	radio.setChannel(tuneKhz);
+	radio.setVolume(recieverVolume);
 	#endif
 }
 
 void settingsCommand() {
 	Logging::info("Frequency (KHz): " + String(tuneKHz));
-	Logging::info("Transmission power (dBuV): " + String(TXdBuV));
+	Logging::info("Volume: " + String(recieverVolume));
 }
 
 void unrecognizedCommand(const char *command) {
