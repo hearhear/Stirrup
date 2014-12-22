@@ -67,9 +67,6 @@ void setup()
 {
 	// Start up serial
 	Serial.begin(19200);
-	while (!Serial) {
-    	; // wait for serial port to connect. Needed for ATmega32u4 based boards (i.e. γ-FM)
-  	}
 
 	// Print out some license stuff
 	Serial.println(F("γ-FM :: Transmitter"));
@@ -97,8 +94,8 @@ void setup()
 	#endif
 
 	Logging::info_nonl("Tuning to ");
-	Serial.print(tuneKHz);
-	Serial.println(F(" KHz"));
+	Serial.print(tuneKHz/10);
+	Serial.println(F(" KHz "));
 	#ifndef FAKE_RADIO
 	radio.tuneFM(tuneKHz);
 	#endif
@@ -144,7 +141,7 @@ void tuneCommand() {
 	}
 	tuneKHz = strtol(arg, NULL, 0);
 	Logging::info_nonl("Tuning radio to ");
-	Serial.print(tuneKHz);
+	Serial.print(tuneKHz/10);
 	Serial.println("KHz");
 	#ifndef FAKE_RADIO
 	radio.tuneFM(tuneKHz);
@@ -186,7 +183,7 @@ void loadCommand() {
 }
 
 void settingsCommand() {
-	Logging::info("Frequency (KHz): " + String(tuneKHz));
+	Logging::info("Frequency (KHz): " + String(tuneKHz/10));
 	Logging::info("Transmission power (dBuV): " + String(TXdBuV));
 }
 

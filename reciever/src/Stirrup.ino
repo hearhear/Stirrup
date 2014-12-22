@@ -56,7 +56,7 @@ SerialCommand sCmd;
 
 // Data stored in the EEPROM
 struct __eeprom_data {
-	long frequencyKHz;
+	int frequencyKHz;
 	int volume;
 	int v;
 };
@@ -65,9 +65,6 @@ void setup()
 {
 	// Start up serial
 	Serial.begin(19200);
-	while (!Serial) {
-    	; // wait for serial port to connect. Needed for ATmega32u4 based boards (i.e. γ-FM)
-  	}
 
 	// Print out some license stuff
 	Serial.println(F("γ-FM :: Reciever"));
@@ -92,6 +89,8 @@ void setup()
 	#ifndef FAKE_RADIO
 	radio.setChannel(recieverChannel);
 	#endif
+
+	digitalWrite(13, HIGH);
 
 	setupCommands();
 }
