@@ -41,9 +41,9 @@
 
 //#define FAKE_RADIO // For testing. Turns off all radio calls.
 
-#define RESETPIN 2
-#define SDIO A4
-#define SCLK A5
+#define RESETPIN 12
+#define SDIO 2
+#define SCLK 3
 
 #ifndef FAKE_RADIO
 Si4703_Breakout radio(RESETPIN, SDIO, SCLK);
@@ -131,7 +131,7 @@ void volumeCommand() {
 		return;
 	}
 	recieverVolume = strtol(arg, NULL, 0);
-	Logging::info_nonl("Setting TX power to ");
+	Logging::info_nonl("Setting volume to ");
 	Serial.println(recieverVolume);
 	#ifndef FAKE_RADIO
 	radio.setVolume(recieverVolume);
