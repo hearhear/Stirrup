@@ -186,6 +186,8 @@ void updateTask() { // Runs every 1500ms.
 	int oldRecieverVolume = 0; eeprom_read(oldRecieverVolume, volume);
 	if (recieverVolume < 0) {
 		recieverVolume = 0;
+	} else if (recieverVolume > 14) {
+		recieverVolume = 14;
 	}
 	if (recieverVolume != oldRecieverVolume) {
 		eeprom_write(recieverVolume, volume);
