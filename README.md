@@ -41,6 +41,8 @@ Thanks to Adafruit for their Si4713 library.
 Thanks to Sparkfun for their Si4703 library.
 Thanks to Steven Cogswell for ArduinoSerialCommand.
 Thanks to Stefan Rado for Arduino-SerialCommand, a modification and refactor of ArduinoSerialCommand.
+Thanks to Derek Chafin for uploading, and Marcello Romani for writing the SimpleTimer library.
+Thanks to Mike Schwager for the ooPinChangeInt library.
 
 Sadly, the only author of the code is myself (as of now).
 Please don't use this in commercial devices with no modification - I have to make money too.
