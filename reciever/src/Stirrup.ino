@@ -26,6 +26,10 @@
 #include <Si4703_Breakout.h>
 #include <SerialCommand.h>
 #include <Logging.h>
+#include <ooPinChangeInt.h>
+#include <SimpleTimer.h>
+
+#include "volumebutton.h"
 
 /*  Structured Arduino EEPROM access macros
 	from https://projectgus.com/2010/07/eeprom-access-with-arduino/
@@ -45,9 +49,17 @@
 #define SDIO 2
 #define SCLK 3
 
+#define VOLUME_UP		8
+#define VOLUME_DOWN		9
+
 #ifndef FAKE_RADIO
 Si4703_Breakout radio(RESETPIN, SDIO, SCLK);
 #endif
+
+VolumeButton upButton = VolumeButton(VOLUME_UP, "volumeUp");
+VolumeButton downButton = VolumeButton(VOLUME_DOWN, "volumeDown");
+
+SimpleTimer updateTaskTimer;
 
 long recieverChannel = 974;
 int recieverVolume = 0;
@@ -92,7 +104,14 @@ void setup()
 
 	digitalWrite(13, HIGH);
 
+	updateTaskTimer.setInterval(1500, updateTask);
+
 	setupCommands();
+}
+
+void eeprom_save_all() {
+	eeprom_write(recieverChannel, frequencyKHz);
+	eeprom_write(recieverVolume, volume);
 }
 
 void setupCommands() {
@@ -139,8 +158,7 @@ void volumeCommand() {
 
 void saveCommand() {
 	Logging::info("Saving settings to EEPROM");
-	eeprom_write(recieverChannel, frequencyKHz);
-	eeprom_write(recieverVolume, volume);
+	eeprom_save_all();
 }
 
 void loadCommand() {
@@ -163,7 +181,24 @@ void unrecognizedCommand(const char *command) {
 	Logging::warning("Unrecognized command: " + String(command) + ".");
 }
 
+void updateTask() { // Runs every 1500ms.
+	recieverVolume = recieverVolume + (upButton.getCount() - downButton.getCount());
+	Serial.println(recieverVolume);
+	int oldRecieverVolume = 0; eeprom_read(oldRecieverVolume, volume);
+	if (recieverVolume < 0) {
+		recieverVolume = 0;
+	}
+	if (recieverVolume != oldRecieverVolume) {
+		eeprom_write(recieverVolume, volume);
+		#ifndef FAKE_RADIO
+		radio.setVolume(recieverVolume);
+		#endif
+		upButton.reset(); downButton.reset();
+	}
+}
+
 void loop()
 {
 	sCmd.readSerial();
+	updateTaskTimer.run();
 }
