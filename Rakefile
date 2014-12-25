@@ -1,5 +1,3 @@
-require 'rubyserial'
-
 devices = {
 	"transmitter" => {"staging" => "pro5v328", "production" => "leonardo"},
 	"reciever" => {"staging" => "pro328", "production" => "leonardo"}
