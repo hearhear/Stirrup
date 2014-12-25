@@ -183,7 +183,6 @@ void unrecognizedCommand(const char *command) {
 
 void updateTask() { // Runs every 1500ms.
 	recieverVolume = recieverVolume + (upButton.getCount() - downButton.getCount());
-	Serial.println(recieverVolume);
 	int oldRecieverVolume = 0; eeprom_read(oldRecieverVolume, volume);
 	if (recieverVolume < 0) {
 		recieverVolume = 0;
