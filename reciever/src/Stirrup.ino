@@ -196,9 +196,6 @@ void updateTask() { // Runs every 1500ms.
 		#endif
 		upButton.reset(); downButton.reset();
 	}
-
-	// Toggle pin 13
-	digitalWrite(13, !digitalRead(13));
 }
 
 void loop()
