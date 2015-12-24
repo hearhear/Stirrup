@@ -6,13 +6,13 @@ devices = {
 task :build, [:device, :scenario] do |t, args|
 	Dir.chdir args.device do
 		variant = devices[args.device][args.scenario]
-		system "ino build -m #{variant}"
+		system "ano build -m #{variant}"
 	end
 end
 
 task :upload, [:device, :scenario] do |t, args|
 	Dir.chdir args.device do
-		system "ino upload -m #{devices[args.device][args.scenario]}"
+		system "ano upload -m #{devices[args.device][args.scenario]}"
 	end
 end
 
