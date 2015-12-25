@@ -25,7 +25,7 @@ Attributions, licensing, authors, etc.
 ===========================================
 
 > Stirrup - Firmware for FM transmitting/recieving systems for assistive tech.
-> Copyright (C) 2014  Liam Marshall
+> Copyright (C) 2014-2015  Liam Marshall
 
 > This program is free software: you can redistribute it and/or modify
 > it under the terms of the GNU General Public License as published by
