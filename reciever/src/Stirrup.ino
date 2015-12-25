@@ -106,7 +106,7 @@ void setup()
 	digitalWrite(13, HIGH);
 
 	updateTaskTimer.setInterval(1500, updateTask);
-	muteBlinkerTimer.setInterval(200, muteBlinker);
+	muteBlinkerTimer.setInterval(100, muteBlinker);
 
 	setupCommands();
 }
