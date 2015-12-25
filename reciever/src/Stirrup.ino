@@ -208,7 +208,7 @@ void muteBlinker() {
 	if (recieverVolume == 0) {
 		digitalWrite(13, !digitalRead(13));
 	} else {
-		digitalWrite(13, LOW);
+		digitalWrite(13, HIGH);
 	}
 }
 
