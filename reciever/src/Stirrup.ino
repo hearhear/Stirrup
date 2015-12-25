@@ -60,6 +60,7 @@ VolumeButton upButton = VolumeButton(VOLUME_UP, "volumeUp");
 VolumeButton downButton = VolumeButton(VOLUME_DOWN, "volumeDown");
 
 SimpleTimer updateTaskTimer;
+SimpleTimer muteBlinkerTimer;
 
 long recieverChannel = 974;
 int recieverVolume = 0;
@@ -105,6 +106,7 @@ void setup()
 	digitalWrite(13, HIGH);
 
 	updateTaskTimer.setInterval(1500, updateTask);
+	muteBlinkerTimer.setInterval(200, muteBlinker);
 
 	setupCommands();
 }
@@ -198,8 +200,17 @@ void updateTask() { // Runs every 1500ms.
 	}
 }
 
+void muteBlinker() {
+	if (recieverVolume == 0) {
+		digitalWrite(13, !digitalRead(13));
+	} else {
+		digitalWrite(13, LOW);
+	}
+}
+
 void loop()
 {
 	sCmd.readSerial();
 	updateTaskTimer.run();
+	muteBlinkerTimer.run();
 }
