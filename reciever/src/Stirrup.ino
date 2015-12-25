@@ -196,8 +196,8 @@ void updateTask() { // Runs every 1500ms.
 		#ifndef FAKE_RADIO
 		radio.setVolume(recieverVolume);
 		#endif
-		upButton.reset(); downButton.reset();
 	}
+	upButton.reset(); downButton.reset();
 }
 
 void muteBlinker() {
